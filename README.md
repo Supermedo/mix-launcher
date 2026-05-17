@@ -1,5 +1,7 @@
 # Mix Launcher
 
+**Repository:** https://github.com/Supermedo/mix-launcher
+
 All your PC games in one place — Steam, Epic, GOG, Xbox, EA, Ubisoft, Amazon, cloud links, and manual shortcuts.
 
 Built with **Electron**, **React**, and **TypeScript** for Windows.

@@ -14,10 +14,10 @@ powershell -ExecutionPolicy Bypass -File scripts\setup-github.ps1
    - Name: `mix-launcher`
    - Do **not** initialize with README (you already have one)
 
-5. Push (replace `YOUR_USER`):
+5. Push:
 
 ```powershell
-& "C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/YOUR_USER/mix-launcher.git
+& "C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/Supermedo/mix-launcher.git
 & "C:\Program Files\Git\bin\git.exe" push -u origin main
 ```
 
