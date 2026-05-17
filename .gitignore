@@ -1,0 +1,27 @@
+node_modules
+dist
+dist-electron
+.vite-cache
+release
+release-build
+release-build-fresh
+release1
+.vite-cache
+
+# Local / debug dumps (not needed in repo)
+uwp_dump.txt
+uwp_packages.txt
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Large binaries (downloaded at build time)
+resources/legendary/legendary.exe
+
+# Build artifacts
+*.blockmap
+builder-debug.yml
+_amazon-path.txt

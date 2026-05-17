@@ -1,0 +1,83 @@
+PRIVACY POLICY - Unified Game Launcher
+
+Last Updated: January 18, 2026
+
+SUMMARY
+Unified Game Launcher is privacy-focused by design. All data stays on your computer. We do not collect, transmit, or store any personal information.
+
+INFORMATION STORAGE
+All information is stored LOCALLY on your device only:
+- Game library data (paths, titles detected from your system)
+- User preferences (theme, language, settings)
+- Optional Steam ID (if you choose to sign in with Steam)
+
+WHAT WE DO NOT COLLECT
+We do NOT collect, transmit, or store:
+- Personal identification information
+- Email addresses or contact details
+- Location data
+- Usage analytics or telemetry
+- Any data about you or your computer
+
+HOW INFORMATION IS USED
+Locally stored information is used solely to:
+- Display your game library within the app
+- Remember your preferences
+- Launch games when you request
+- Organize your game collections
+
+THIRD-PARTY SERVICES
+
+Steam Integration (Optional):
+- Uses Steam OpenID authentication (secure)
+- Only Steam ID stored locally on your device
+- No passwords stored or transmitted
+- You can disconnect anytime
+
+Free Games API:
+- Fetches public game listings from GamerPower
+- No personal information sent
+
+Game Metadata:
+- Fetches game artwork and information from SteamGridDB and RAWG.io
+- Only game titles sent, no personal information
+
+DATA SECURITY
+- All data stored locally in: %APPDATA%\unified-launcher\
+- No cloud storage or external servers
+- Full user control over all data
+- Uninstalling removes all data
+
+YOUR RIGHTS
+- Access your data (plain text JSON files)
+- Delete your data (uninstall or delete data folder)
+- Export your data (built-in export feature)
+- Control optional features
+
+CHILDREN'S PRIVACY
+Does not knowingly collect information from children under 13.
+
+CHANGES TO POLICY
+Updates posted within app and store listing. Continued use constitutes acceptance.
+
+INTERNATIONAL USERS
+All operations local to your device. No data crosses borders.
+
+CONTACT
+[Your Email Address]
+[Your Website/Support URL]
+
+YOUR CONSENT
+By using Unified Game Launcher, you consent to this Privacy Policy.
+
+---
+
+KEY POINTS:
+✓ 100% local storage - nothing leaves your computer
+✓ No personal data collection
+✓ No tracking or analytics
+✓ Optional features require your consent
+✓ Complete user control
+✓ Uninstall removes all data
+
+Unified Game Launcher respects your privacy. Your gaming library is yours alone.

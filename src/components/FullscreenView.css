@@ -1,0 +1,2131 @@
+/* ============================================
+   FULLSCREEN VIEW - Modern Console-Style UI
+   ============================================ */
+
+/* Container */
+/* Settings / Add Game modals above Big Picture */
+.app-fullscreen-mode .modal-overlay,
+.app-fullscreen-mode .modal-backdrop {
+    z-index: 10001;
+}
+
+.app-fullscreen-mode .loading-screen {
+    display: none;
+}
+
+.app-fullscreen-mode .background-fetch-banner,
+.app-fullscreen-mode .title-bar,
+.app-fullscreen-mode .main-content {
+    display: none;
+}
+
+.fs-container {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    background: #000;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #fff;
+    user-select: none;
+    --fs-accent: #107c10;
+    --fs-chrome-top: 132px;
+    --fs-chrome-bottom: 72px;
+}
+
+.fs-theme-xbox { --fs-accent: #107c10; }
+.fs-theme-playstation { --fs-accent: #003791; }
+.fs-theme-nintendo { --fs-accent: #e60012; }
+
+.fs-container[data-console="playstation"] .fs-nav-item.active,
+.fs-container[data-console="playstation"] .fs-nav-indicator {
+    background: linear-gradient(90deg, #003791, #0070d1);
+}
+
+.fs-container[data-console="nintendo"] .fs-nav-item.active,
+.fs-container[data-console="nintendo"] .fs-nav-indicator {
+    background: linear-gradient(90deg, #e60012, #ff4455);
+}
+
+.fs-container[data-console="xbox"] .fs-nav-item.active,
+.fs-container[data-console="xbox"] .fs-nav-indicator {
+    background: linear-gradient(90deg, #107c10, #2ea043);
+}
+
+.fs-low-effects .fs-bg-image {
+    filter: blur(8px) saturate(1);
+    animation: none;
+}
+
+.fs-low-effects .fs-particles {
+    display: none;
+}
+
+.fs-battery {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ============================================
+   BACKGROUND & EFFECTS
+   ============================================ */
+
+.fs-background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.fs-bg-image {
+    position: absolute;
+    inset: -50px;
+    width: calc(100% + 100px);
+    height: calc(100% + 100px);
+    object-fit: cover;
+    filter: blur(30px) saturate(1.2);
+    transform: scale(1.1);
+    transition: opacity 0.8s ease, transform 8s ease;
+    animation: fs-bg-drift 20s ease-in-out infinite alternate;
+}
+
+.fs-bg-image.transitioning {
+    opacity: 0;
+    transform: scale(1.15);
+}
+
+@keyframes fs-bg-drift {
+    0% { transform: scale(1.1) translate(0, 0); }
+    100% { transform: scale(1.15) translate(-20px, -10px); }
+}
+
+.fs-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+}
+
+.fs-bg-gradient {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(168, 85, 247, 0.1) 0%, transparent 40%),
+        linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+/* Ambient Particles */
+.fs-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.fs-particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: fs-float linear infinite;
+}
+
+@keyframes fs-float {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-10vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.fs-header {
+    position: relative;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 20px;
+    padding: 16px 40px 12px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65) 0%, transparent 100%);
+}
+
+.fs-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.fs-logo-icon {
+    display: flex;
+    align-items: center;
+    color: #a5b4fc;
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+}
+
+.fs-logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Navigation — full-width second row, wraps instead of horizontal scroll */
+.fs-nav {
+    flex: 1 1 100%;
+    order: 3;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: visible;
+}
+
+.fs-nav-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.fs-nav-platforms .fs-nav-item {
+    padding: 8px 12px;
+}
+
+.fs-nav-platforms .fs-nav-label {
+    font-size: 12px;
+}
+
+.fs-nav.focused {
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+.fs-nav-item {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fs-nav-item:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.fs-nav-item.active {
+    color: #fff;
+    background: rgba(99, 102, 241, 0.3);
+}
+
+.fs-nav-item.focused {
+    outline: 2px solid rgba(99, 102, 241, 0.8);
+    outline-offset: 2px;
+    color: #fff;
+}
+
+.fs-nav-icon {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fs-nav-indicator {
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    border-radius: 2px;
+}
+
+/* Header Right */
+.fs-header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Controller Indicator */
+.fs-controller-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 20px;
+    animation: fs-controller-pulse 2s ease-in-out infinite;
+}
+
+@keyframes fs-controller-pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+.fs-controller-icon {
+    font-size: 16px;
+}
+
+.fs-controller-text {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #4ade80;
+}
+
+/* View Toggle */
+.fs-view-toggle {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fs-view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fs-view-btn:hover {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.fs-view-btn.active {
+    color: #fff;
+    background: rgba(99, 102, 241, 0.4);
+}
+
+/* Refresh Metadata Button */
+.fs-refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.fs-refresh-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: scale(1.02);
+}
+
+.fs-refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.fs-refresh-btn.refreshing svg {
+    animation: fs-spin 1s linear infinite;
+}
+
+@keyframes fs-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.fs-datetime {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.fs-time {
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+}
+
+.fs-date {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+
+.fs-main {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 40px 30px;
+    min-height: 0;
+}
+
+/* Empty State */
+.fs-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.fs-empty-icon {
+    font-size: 64px;
+    filter: grayscale(1);
+    opacity: 0.3;
+}
+
+.fs-empty h2 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.fs-empty p {
+    font-size: 14px;
+}
+
+/* ============================================
+   HERO SECTION - Big Game Display
+   ============================================ */
+
+.fs-hero-section {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 50px;
+    margin-bottom: 30px;
+    min-height: 300px;
+}
+
+.fs-hero-media {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.fs-hero-image-container {
+    position: relative;
+    width: 520px;
+    height: 292px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.fs-hero-artwork {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: fs-hero-fade-in 0.5s ease;
+}
+
+@keyframes fs-hero-fade-in {
+    from { opacity: 0; transform: scale(1.05); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.fs-hero-fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent 60%, rgba(0, 0, 0, 0.4) 100%);
+    pointer-events: none;
+}
+
+/* Screenshot Indicators (dots) */
+.fs-screenshot-indicators {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.fs-screenshot-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fs-screenshot-dot:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.fs-screenshot-dot.active {
+    background: #fff;
+    transform: scale(1.2);
+}
+
+/* Screenshot Thumbnails */
+.fs-screenshot-thumbs {
+    display: flex;
+    gap: 10px;
+}
+
+.fs-screenshot-thumb {
+    width: 120px;
+    height: 68px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+}
+
+.fs-screenshot-thumb:hover {
+    opacity: 0.9;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.fs-screenshot-thumb.active {
+    opacity: 1;
+    border-color: rgba(99, 102, 241, 0.8);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.fs-screenshot-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fs-hero-content {
+    flex: 1;
+    padding-bottom: 10px;
+    animation: fs-slide-up 0.4s ease;
+}
+
+@keyframes fs-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fs-game-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.fs-platform-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.fs-installed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4ade80;
+}
+
+.fs-genre {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.fs-game-title {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    color: #fff;
+}
+
+/* About Section in Horizontal Mode */
+.fs-about-section {
+    margin-bottom: 20px;
+    max-width: 550px;
+}
+
+.fs-about-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fs-about-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.fs-game-desc {
+    font-size: 14px;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    max-width: 100%;
+}
+
+.fs-game-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.fs-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.fs-stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.fs-stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.fs-game-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.fs-btn-play {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 36px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+}
+
+.fs-btn-play:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.5);
+}
+
+.fs-btn-play:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.fs-btn-play svg {
+    width: 28px;
+    height: 28px;
+}
+
+.fs-favorite-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: rgba(239, 68, 68, 0.2);
+    border-radius: 10px;
+    font-size: 14px;
+    color: #fca5a5;
+}
+
+/* ============================================
+   GAME CAROUSEL
+   ============================================ */
+
+.fs-carousel {
+    position: relative;
+    margin: 0 -40px;
+    padding: 0 40px;
+}
+
+.fs-carousel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 60px 12px;
+}
+
+.fs-carousel-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.fs-carousel-count {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.fs-game-list {
+    display: flex;
+    gap: 16px;
+    padding: 10px 60px 30px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.fs-game-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* Game Card */
+.fs-game-card {
+    position: relative;
+    flex-shrink: 0;
+    width: 180px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fs-game-card:hover {
+    transform: translateY(-4px);
+}
+
+.fs-game-card.selected {
+    transform: translateY(-6px) scale(1.05);
+    z-index: 10;
+}
+
+.fs-carousel.focused .fs-game-card.selected {
+    transform: translateY(-8px) scale(1.08);
+}
+
+.fs-card-inner {
+    position: relative;
+    aspect-ratio: 3/4;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16162a 100%);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+    transition: all 0.25s ease;
+    border: 2px solid transparent;
+}
+
+.fs-game-card.selected .fs-card-inner {
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.fs-card-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.fs-game-card:hover .fs-card-inner img,
+.fs-game-card.selected .fs-card-inner img {
+    transform: scale(1.03);
+}
+
+.fs-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: linear-gradient(135deg, #2a2a4a 0%, #1a1a30 100%);
+}
+
+.fs-card-placeholder-name {
+    font-size: 10px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.3;
+    max-height: 3.9em;
+    overflow: hidden;
+}
+
+.fs-card-favorite {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 12px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    z-index: 2;
+}
+
+/* Selection indicator - clean bottom bar */
+.fs-card-select-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.25s ease;
+}
+
+.fs-game-card.selected .fs-card-select-bar {
+    transform: scaleX(1);
+}
+
+/* Card name below the card */
+.fs-card-name {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s ease;
+}
+
+.fs-game-card.selected .fs-card-name {
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Carousel Arrows */
+.fs-carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 20;
+}
+
+.fs-carousel-arrow:hover {
+    background: rgba(99, 102, 241, 0.4);
+    border-color: rgba(99, 102, 241, 0.5);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.fs-arrow-left {
+    left: 20px;
+}
+
+.fs-arrow-right {
+    right: 20px;
+}
+
+.fs-carousel-arrow svg {
+    width: 24px;
+    height: 24px;
+}
+
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.fs-footer {
+    position: relative;
+    z-index: 100;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 40px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 70%, transparent 100%);
+}
+
+.fs-controls,
+.fs-gamepad-controls {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.fs-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fs-control-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 28px;
+    padding: 0 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.fs-control-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.fs-btn-a {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: #fff;
+}
+
+.fs-btn-b {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+}
+
+.fs-btn-x {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #fff;
+}
+
+.fs-btn-y {
+    background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+    color: #fff;
+}
+
+.fs-btn-lb,
+.fs-btn-rb,
+.fs-btn-dpad {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    width: auto;
+    padding: 0 8px;
+    font-size: 10px;
+}
+
+.fs-btn-dpad {
+    min-width: 28px;
+    font-family: inherit;
+}
+
+.fs-gamepad-hint {
+    opacity: 0.5;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.fs-control-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================
+   QUICK MENU
+   ============================================ */
+
+.fs-quick-menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    animation: fs-fade-in 0.2s ease;
+}
+
+@keyframes fs-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fs-quick-menu {
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.95) 0%, rgba(20, 20, 35, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 32px;
+    min-width: 300px;
+    animation: fs-scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fs-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.fs-quick-menu h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.fs-quick-menu-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fs-quick-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fs-quick-item:hover,
+.fs-quick-item.focused {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+.fs-quick-item.focused {
+    outline: 2px solid rgba(99, 102, 241, 0.9);
+    outline-offset: 2px;
+    box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
+}
+
+.fullscreen-controls-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.fullscreen-controls-row {
+    display: grid;
+    grid-template-columns: 1fr minmax(120px, 140px);
+    gap: 10px;
+    align-items: center;
+}
+
+.fullscreen-controls-label {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.fullscreen-controls-select {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+}
+
+.fs-quick-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.fs-rating-star {
+    color: #fbbf24;
+    vertical-align: middle;
+}
+
+.fs-installed-badge,
+.fs-favorite-badge,
+.fs-controller-icon,
+.fs-battery-icon,
+.fs-card-favorite,
+.fs-carousel-item-fav {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.fs-favorite-badge,
+.fs-card-favorite,
+.fs-carousel-item-fav {
+    color: #f472b6;
+}
+
+.fs-empty-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.fs-quick-hint {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.fs-toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.fs-toolbar-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.fs-toolbar-btn svg {
+    flex-shrink: 0;
+}
+
+.fs-exit-dialog {
+    text-align: center;
+}
+
+.fs-exit-dialog p {
+    margin: 0 0 24px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.fs-exit-dialog-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.fs-exit-dialog-actions .fs-quick-item {
+    flex: 1;
+    justify-content: center;
+    max-width: 140px;
+}
+
+.fs-exit-dialog-actions .fs-quick-item.danger:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+@media (max-height: 820px) {
+    .fs-immersive-title {
+        -webkit-line-clamp: 1;
+        font-size: clamp(20px, 2.8vh, 28px);
+    }
+
+    .fs-immersive-desc {
+        -webkit-line-clamp: 2;
+    }
+
+    .fs-immersive-about {
+        display: none;
+    }
+
+    .fs-immersive-gallery-main {
+        min-height: 60px;
+    }
+}
+
+/* ============================================
+   IMMERSIVE HORIZONTAL VIEW
+   ============================================ */
+
+.fs-immersive-view {
+    position: absolute;
+    inset: 0;
+    display: block;
+    z-index: 50;
+}
+
+/* Full Background */
+.fs-immersive-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.fs-immersive-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: fs-immersive-fade 0.8s ease;
+}
+
+@keyframes fs-immersive-fade {
+    from { opacity: 0; transform: scale(1.05); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.fs-immersive-overlay {
+    position: absolute;
+    inset: 0;
+    background: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.7) 100%),
+        linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 30%);
+}
+
+/* Left Panel — fixed viewport slice, no scroll */
+.fs-immersive-left {
+    position: absolute;
+    top: var(--fs-chrome-top, 132px);
+    left: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: clamp(4px, 0.8vh, 10px);
+    width: min(520px, 46vw);
+    max-width: 520px;
+    height: calc(100% - var(--fs-chrome-top, 132px) - var(--fs-chrome-bottom, 72px));
+    padding: 0 40px 4px 56px;
+    overflow: hidden;
+    pointer-events: auto;
+    box-sizing: border-box;
+}
+
+.fs-immersive-info {
+    flex: 0 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.65vh, 10px);
+    overflow: hidden;
+}
+
+.fs-immersive-platform {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff;
+    margin-bottom: 0;
+    width: fit-content;
+    flex-shrink: 0;
+}
+
+.fs-immersive-title {
+    font-size: clamp(22px, 3.4vh, 36px);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.05;
+    margin: 0;
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+    flex-shrink: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.fs-immersive-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    font-size: clamp(9px, 1.1vh, 11px);
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+    max-width: 100%;
+}
+
+.fs-immersive-sep {
+    opacity: 0.3;
+}
+
+/* Genres */
+.fs-immersive-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.fs-immersive-genre-tag {
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* About Section */
+.fs-immersive-about {
+    margin-bottom: 0;
+    max-width: 100%;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.fs-immersive-about-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fs-immersive-about-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.fs-immersive-desc {
+    font-size: clamp(11px, 1.35vh, 13px);
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 100%;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Game Stats */
+.fs-immersive-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.fs-immersive-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.fs-immersive-stat .fs-stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.fs-immersive-stat .fs-stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.fs-star {
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 16px;
+}
+
+.fs-star.filled {
+    color: #fbbf24;
+}
+
+.fs-installed-icon {
+    color: #4ade80 !important;
+}
+
+.fs-immersive-fav-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fca5a5;
+}
+
+/* Action Buttons */
+.fs-immersive-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.fs-immersive-play {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 6px;
+    color: #000;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fs-immersive-play:hover {
+    background: #fff;
+    transform: scale(1.02);
+    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.3);
+}
+
+.fs-immersive-play svg {
+    width: 18px;
+    height: 18px;
+}
+
+.fs-immersive-more {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.fs-immersive-more:hover {
+    color: #fff;
+}
+
+/* Gallery — grows into remaining space above footer */
+.fs-immersive-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.6vh, 8px);
+    width: 100%;
+    margin-top: 0;
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none;
+    margin-top: auto;
+}
+
+.fs-immersive-gallery-main {
+    position: relative;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 72px;
+    height: auto;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+.fs-immersive-gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fs-gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.fs-gallery-arrow:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.fs-gallery-prev {
+    left: 8px;
+}
+
+.fs-gallery-next {
+    right: 8px;
+}
+
+.fs-immersive-gallery-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.fs-immersive-gallery-strip::-webkit-scrollbar {
+    height: 4px;
+}
+
+.fs-immersive-gallery-strip::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 4px;
+}
+
+.fs-immersive-gallery-strip {
+    flex: 0 0 auto;
+    max-height: 52px;
+}
+
+.fs-immersive-gallery-thumb {
+    flex: 0 0 auto;
+    width: clamp(72px, 8vw, 96px);
+    height: clamp(40px, 4.5vh, 48px);
+    padding: 0;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.65;
+    transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.fs-immersive-gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.fs-immersive-gallery-thumb:hover {
+    opacity: 0.9;
+}
+
+.fs-immersive-gallery-thumb.active {
+    opacity: 1;
+    border-color: #fff;
+    transform: scale(1.04);
+}
+
+/* Right Panel - Horizontal Carousel */
+.fs-immersive-right {
+    position: absolute;
+    bottom: 100px;
+    right: 40px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.fs-immersive-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    width: 500px;
+}
+
+/* Carousel Item */
+.fs-carousel-item {
+    position: absolute;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fs-carousel-item-inner {
+    position: relative;
+    width: 180px;
+    height: 240px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16162a 100%);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.fs-carousel-item.selected .fs-carousel-item-inner {
+    width: 200px;
+    height: 267px;
+    border-color: #fff;
+    box-shadow: 
+        0 15px 50px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(255, 255, 255, 0.2),
+        0 0 60px rgba(255, 255, 255, 0.15);
+}
+
+.fs-carousel-item:hover:not(.selected) .fs-carousel-item-inner {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.fs-carousel-item-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fs-carousel-item-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    background: linear-gradient(135deg, #2a2a4a 0%, #1a1a30 100%);
+}
+
+.fs-carousel-item-placeholder span {
+    font-size: 11px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.fs-carousel-item-fav {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 16px;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+    z-index: 2;
+}
+
+/* Glow effect for selected item */
+.fs-carousel-item-glow {
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+    animation: fs-carousel-glow 2s ease-in-out infinite;
+}
+
+@keyframes fs-carousel-glow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Navigation hint */
+.fs-carousel-nav-hint {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 14px;
+}
+
+.fs-carousel-nav-hint span {
+    transition: color 0.2s ease;
+}
+
+.fs-carousel-nav-hint span:first-child,
+.fs-carousel-nav-hint span:last-child {
+    font-size: 20px;
+    animation: fs-nav-bounce-h 1.5s ease-in-out infinite;
+}
+
+.fs-carousel-nav-hint span:first-child {
+    animation-delay: -0.75s;
+}
+
+@keyframes fs-nav-bounce-h {
+    0%, 100% { transform: translateX(0); opacity: 0.4; }
+    50% { transform: translateX(-3px); opacity: 0.8; }
+}
+
+.fs-carousel-nav-hint span:last-child {
+    animation-name: fs-nav-bounce-h-right;
+}
+
+@keyframes fs-nav-bounce-h-right {
+    0%, 100% { transform: translateX(0); opacity: 0.4; }
+    50% { transform: translateX(3px); opacity: 0.8; }
+}
+
+.fs-carousel-counter {
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1400px) {
+    .fs-hero-section {
+        gap: 40px;
+    }
+    
+    .fs-hero-image-container {
+        width: 420px;
+        height: 236px;
+    }
+    
+    .fs-screenshot-thumb {
+        width: 100px;
+        height: 56px;
+    }
+    
+    .fs-game-title {
+        font-size: 34px;
+    }
+    
+    .fs-immersive-left {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+    
+    .fs-immersive-title {
+        font-size: 32px;
+    }
+    
+    .fs-immersive-gallery {
+        width: min(360px, 100%);
+    }
+
+    .fs-immersive-gallery-main {
+        height: 170px;
+    }
+    
+    .fs-immersive-right {
+        right: 30px;
+        bottom: 90px;
+    }
+    
+    .fs-immersive-carousel {
+        width: 480px;
+        height: 280px;
+    }
+    
+    .fs-carousel-item-inner {
+        width: 160px;
+        height: 213px;
+    }
+    
+    .fs-carousel-item.selected .fs-carousel-item-inner {
+        width: 180px;
+        height: 240px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .fs-hero-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        min-height: auto;
+    }
+    
+    .fs-hero-image-container {
+        width: 100%;
+        max-width: 500px;
+        height: 200px;
+    }
+    
+    .fs-screenshot-thumbs {
+        display: none;
+    }
+    
+    .fs-game-title {
+        font-size: 30px;
+    }
+    
+    .fs-game-card {
+        width: 160px;
+    }
+    
+    .fs-immersive-left {
+        padding-left: 30px;
+        padding-right: 30px;
+        max-width: 450px;
+    }
+    
+    .fs-immersive-title {
+        font-size: 26px;
+    }
+    
+    .fs-immersive-desc {
+        -webkit-line-clamp: 2;
+    }
+
+    .fs-immersive-gallery-main {
+        min-height: 64px;
+    }
+
+    .fs-immersive-gallery-thumb {
+        width: 72px;
+        height: 40px;
+    }
+    
+    .fs-immersive-right {
+        right: 20px;
+        bottom: 80px;
+    }
+    
+    .fs-immersive-carousel {
+        width: 420px;
+        height: 260px;
+    }
+    
+    .fs-carousel-item-inner {
+        width: 140px;
+        height: 186px;
+    }
+    
+    .fs-carousel-item.selected .fs-carousel-item-inner {
+        width: 160px;
+        height: 213px;
+    }
+}
+
+@media (max-width: 900px) {
+    .fs-header {
+        padding: 16px 24px;
+    }
+    
+    .fs-nav {
+        gap: 4px;
+        padding: 6px;
+    }
+    
+    .fs-nav-item {
+        padding: 8px 12px;
+    }
+    
+    .fs-nav-label {
+        display: none;
+    }
+    
+    .fs-main {
+        padding: 0 24px 20px;
+    }
+    
+    .fs-hero-image-container {
+        height: 160px;
+    }
+    
+    .fs-game-title {
+        font-size: 26px;
+    }
+    
+    .fs-about-section {
+        display: none;
+    }
+    
+    .fs-game-stats {
+        display: none;
+    }
+    
+    .fs-game-card {
+        width: 140px;
+    }
+    
+    .fs-card-name {
+        font-size: 11px;
+    }
+    
+    .fs-footer {
+        padding: 12px 24px;
+    }
+    
+    .fs-gamepad-controls {
+        display: none;
+    }
+    
+    .fs-carousel-header {
+        padding: 0 24px 8px;
+    }
+    
+    .fs-game-list {
+        padding: 10px 24px 20px;
+        gap: 12px;
+    }
+    
+    /* Immersive view on small screens */
+    .fs-container {
+        --fs-chrome-top: 148px;
+    }
+
+    .fs-immersive-left {
+        padding-left: 24px;
+        padding-right: 24px;
+        max-width: 100%;
+    }
+    
+    .fs-immersive-platform {
+        padding: 6px 12px;
+        font-size: 11px;
+        margin-bottom: 16px;
+    }
+    
+    .fs-immersive-title {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+    
+    .fs-immersive-meta {
+        font-size: 10px;
+    }
+    
+    .fs-immersive-left {
+        width: min(100%, 92vw);
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .fs-immersive-desc {
+        -webkit-line-clamp: 2;
+    }
+
+    .fs-immersive-right {
+        right: 10px;
+        bottom: 70px;
+    }
+    
+    .fs-immersive-carousel {
+        width: 340px;
+        height: 200px;
+    }
+    
+    .fs-carousel-item-inner {
+        width: 120px;
+        height: 160px;
+    }
+    
+    .fs-carousel-item.selected .fs-carousel-item-inner {
+        width: 140px;
+        height: 186px;
+    }
+    
+    .fs-carousel-nav-hint {
+        gap: 10px;
+        font-size: 12px;
+    }
+}
+
+.fs-library-busy {
+    position: absolute;
+    bottom: 88px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 120;
+    min-width: min(420px, calc(100vw - 48px));
+    max-width: min(520px, calc(100vw - 32px));
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(12, 12, 18, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+    pointer-events: auto;
+}
+
+.fs-library-busy-text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+}
+
+.fs-library-busy-bar {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+}
+
+.fs-library-busy-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--fs-accent, #107c10);
+    transition: width 0.2s ease;
+}
+
+.fs-library-busy-count {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.55);
+    text-align: center;
+}
+
+.fs-library-busy-cancel {
+    align-self: center;
+    margin-top: 4px;
+    padding: 6px 14px;
+    font-size: 0.8125rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.fs-library-busy-cancel:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
