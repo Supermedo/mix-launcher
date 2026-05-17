@@ -14,6 +14,12 @@ Built with **Electron**, **React**, and **TypeScript** for Windows.
 - Collections, favorites, recent play, metadata scraping
 - English and Arabic UI
 
+<img width="2548" height="1430" alt="Screenshot 2026-05-17 151939" src="https://github.com/user-attachments/assets/ccb1c60b-d39c-46f6-84b8-1af3025cf7ef" />
+<img width="2552" height="1430" alt="Screenshot 2026-05-17 151924" src="https://github.com/user-attachments/assets/868b7eb3-c834-48a8-90f9-0c606a9e617f" />
+<img width="2551" height="1361" alt="Screenshot 2026-05-17 151842" src="https://github.com/user-attachments/assets/9b3e0b64-6bd9-4a3a-972d-195c208abc80" />
+<img width="762" height="1177" alt="Screenshot 2026-05-17 151907" src="https://github.com/user-attachments/assets/62c1068d-224d-423e-96a5-8016a35e23ff" />
+<img width="758" height="1161" alt="Screenshot 2026-05-17 151851" src="https://github.com/user-attachments/assets/6d3d876b-86e8-4990-9cc8-fac30248f091" />
+
 ## Development
 
 ```bash
